@@ -13,7 +13,6 @@ import atexit
 # from selenium.webdriver.chrome.options import Options 
 # driver = webdriver.Chrome(os.path.join(sys._MEIPASS, 'chromedriver.exe'))
 
-
 app = Flask(__name__)
 port = "5234"
 
