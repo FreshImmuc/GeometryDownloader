@@ -7,7 +7,6 @@ from flask import Flask, render_template_string, request, redirect, url_for
 from werkzeug.serving import BaseWSGIServer
 import requests
 import yt_dlp
-import imageio_ffmpeg
 
 app = Flask(__name__)
 port = "5234"
@@ -49,8 +48,8 @@ def download_song(song_id):
 
 def get_ffmpeg_dir():
     try:
-        return os.path.dirname(imageio_ffmpeg.get_ffmpeg_exe())
-    except Exception:
+        return sys._MEIPASS
+    except AttributeError:
         return None
 
 

@@ -18,8 +18,18 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
-        run: pip install flask requests yt-dlp imageio-ffmpeg pyinstaller
+      - name: Install Python dependencies
+        run: pip install flask requests yt-dlp pyinstaller
+
+      - name: Download ffmpeg + ffprobe
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" -OutFile "ffmpeg.zip"
+          Expand-Archive -Path "ffmpeg.zip" -DestinationPath "ffmpeg-extracted"
+          $folder = Get-ChildItem -Path "ffmpeg-extracted" -Directory | Select-Object -First 1
+          New-Item -ItemType Directory -Force -Path "ffmpeg-bin" | Out-Null
+          Copy-Item "$($folder.FullName)\bin\ffmpeg.exe" "ffmpeg-bin\"
+          Copy-Item "$($folder.FullName)\bin\ffprobe.exe" "ffmpeg-bin\"
 
       - name: Build EXE
         run: pyinstaller GeometryDownloader.spec --clean

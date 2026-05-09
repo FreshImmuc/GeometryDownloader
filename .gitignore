@@ -162,3 +162,4 @@ build/
 dist/
 newgrounds.py
 temp/
+ffmpeg-bin/

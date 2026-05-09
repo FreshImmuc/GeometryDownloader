@@ -2,17 +2,19 @@ block_cipher = None
 
 from PyInstaller.utils.hooks import collect_all
 
-yt_dlp_datas,      yt_dlp_binaries,      yt_dlp_hiddenimports      = collect_all('yt_dlp')
-imageio_datas,     imageio_binaries,     imageio_hiddenimports      = collect_all('imageio_ffmpeg')
+yt_dlp_datas, yt_dlp_binaries, yt_dlp_hiddenimports = collect_all('yt_dlp')
 
 a = Analysis(
     ['app.py'],
     pathex=[],
-    binaries=yt_dlp_binaries + imageio_binaries,
-    datas=yt_dlp_datas + imageio_datas + [
+    binaries=yt_dlp_binaries + [
+        ('ffmpeg-bin/ffmpeg.exe', '.'),
+        ('ffmpeg-bin/ffprobe.exe', '.'),
+    ],
+    datas=yt_dlp_datas + [
         ('templates/index.html', '.'),
     ],
-    hiddenimports=yt_dlp_hiddenimports + imageio_hiddenimports + [
+    hiddenimports=yt_dlp_hiddenimports + [
         'flask',
         'jinja2',
         'werkzeug',
@@ -46,7 +48,7 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    upx_exclude=[],
+    upx_exclude=['ffmpeg.exe', 'ffprobe.exe'],
     runtime_tmpdir=None,
     console=False,
     icon='icon.ico',
