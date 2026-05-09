@@ -3,40 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Newgrounds Song Downloader</title>
+    <title>GD Song Downloader</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body { background-color: #1a1a2e; color: #e0e0e0; }
+        .card { background-color: #16213e; border: 1px solid #0f3460; }
+        .nav-tabs { border-bottom: 1px solid #0f3460; }
+        .nav-tabs .nav-link { color: #a0a0c0; border: 1px solid transparent; }
+        .nav-tabs .nav-link:hover { border-color: #0f3460; color: #e0e0e0; }
+        .nav-tabs .nav-link.active { background-color: #0f3460; color: #fff; border-color: #0f3460; }
+        .form-control { background-color: #0d1b2a; border: 1px solid #0f3460; color: #e0e0e0; }
+        .form-control:focus { background-color: #0d1b2a; border-color: #e94560; color: #e0e0e0; box-shadow: none; }
+        label, .form-text { color: #a0a0c0; }
+        h4 { color: #e94560; }
+    </style>
 </head>
 <body>
 
-<div class="container mt-5">
+<div class="container mt-5" style="max-width: 520px;">
+    <h4 class="text-center mb-4">GD Song Downloader</h4>
+
     {% if status_message %}
-    <div class="alert alert-info" role="alert">
-        {{ status_message }}
-    </div>
+    <div class="alert alert-info" role="alert">{{ status_message }}</div>
     {% endif %}
-    <div class="row justify-content-center">
-        <div class="col-md-4">
-            <form action="/download" method="post">
-                <div class="form-group">
-                    <label for="song_id">Enter Song ID:</label>
-                    <input type="text" class="form-control" id="song_id" name="song_id" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Download Song</button>
-            </form>
+
+    <div class="card p-4">
+        <ul class="nav nav-tabs mb-4" id="modeTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="ng-tab" data-toggle="tab" href="#newgrounds" role="tab">Newgrounds</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="yt-tab" data-toggle="tab" href="#youtube" role="tab">YouTube</a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="newgrounds" role="tabpanel">
+                <form action="/download" method="post" onsubmit="setLoading(this, 'Downloading...')">
+                    <div class="form-group">
+                        <label>Newgrounds Song ID</label>
+                        <input type="text" class="form-control" name="song_id" placeholder="e.g. 1234567" required>
+                        <small class="form-text">The number in the Newgrounds audio URL.</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Download Song</button>
+                </form>
+            </div>
+
+            <div class="tab-pane fade" id="youtube" role="tabpanel">
+                <form action="/download_youtube" method="post" onsubmit="setLoading(this, 'Downloading & converting...')">
+                    <div class="form-group">
+                        <label>YouTube URL</label>
+                        <input type="text" class="form-control" name="youtube_url"
+                               placeholder="https://www.youtube.com/watch?v=..." required>
+                    </div>
+                    <div class="form-group">
+                        <label>Save as Song ID</label>
+                        <input type="text" class="form-control" name="song_id"
+                               placeholder="e.g. 9999999" required>
+                        <small class="form-text">Any unused number — GD uses this to find the file.</small>
+                    </div>
+                    <button type="submit" class="btn btn-danger btn-block">Download as Audio</button>
+                </form>
+            </div>
         </div>
     </div>
-    <div class="row justify-content-center mt-3">
-        <div class="col-md-4">
-            <form action="/shutdown" method="post">
-                <button type="submit" class="btn btn-danger btn-block">Stop the Downloader</button>
-            </form>
-        </div>
+
+    <div class="mt-3">
+        <form action="/shutdown" method="post">
+            <button type="submit" class="btn btn-secondary btn-block btn-sm">Stop the Downloader</button>
+        </form>
     </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
+<script>
+    function setLoading(form, msg) {
+        var btn = form.querySelector('[type=submit]');
+        btn.disabled = true;
+        btn.textContent = msg;
+    }
+    var activeTab = sessionStorage.getItem('activeTab');
+    if (activeTab) { $('#modeTab a[href="' + activeTab + '"]').tab('show'); }
+    $('#modeTab a').on('shown.bs.tab', function(e) {
+        sessionStorage.setItem('activeTab', $(e.target).attr('href'));
+    });
+</script>
 </body>
 </html>
